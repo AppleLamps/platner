@@ -912,9 +912,49 @@ h3 {
   }
 }
 
+.consensus-grid {
+  align-items: stretch;
+}
+
+.consensus-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.consensus-col h3 {
+  margin: 0 0 0.75rem;
+  min-height: 2.6em;
+  line-height: 1.3;
+}
+
+.consensus-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.consensus-panel .consensus-list {
+  flex: 1;
+}
+
+.consensus-panel.table-wrap {
+  padding: 0;
+}
+
+.consensus-panel .data-table {
+  border: none;
+  border-radius: 0;
+  height: 100%;
+}
+
 .consensus-list {
   margin: 0;
-  padding-left: 1.25rem;
+  padding: 0.75rem 1rem 0.75rem 2rem;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
@@ -922,6 +962,10 @@ h3 {
 .consensus-list li {
   margin-bottom: 0.45rem;
   padding-left: 0.25rem;
+}
+
+.consensus-list li:last-child {
+  margin-bottom: 0;
 }
 
 .consensus-list li::marker {

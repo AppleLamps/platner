@@ -286,11 +286,14 @@ function renderFooter(container) {
       className: "section-caption",
       textContent: "What nearly all camps accept, plus the outside validators and villains each side cites.",
     }),
-    el("div", { className: "grid-2" }, [
-      el("div", {}, [el("h3", { textContent: "What almost everyone agrees on" }), ol]),
-      el("div", {}, [
+    el("div", { className: "grid-2 consensus-grid" }, [
+      el("div", { className: "consensus-col" }, [
+        el("h3", { textContent: "What almost everyone agrees on" }),
+        el("div", { className: "consensus-panel" }, [ol]),
+      ]),
+      el("div", { className: "consensus-col" }, [
         el("h3", { textContent: "How camps cite institutions" }),
-        el("div", { className: "table-wrap" }, [instTable]),
+        el("div", { className: "consensus-panel table-wrap" }, [instTable]),
       ]),
     ]),
     el("div", { className: "callout callout-warning" }, [
