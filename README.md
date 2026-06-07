@@ -1,22 +1,19 @@
 # Platner Research
 
-Open-source political research on **Graham Platner**, Maine Democratic U.S. Senate candidate challenging Susan Collins. Includes an interactive fediverse discourse landscape and a full opposition research dossier.
+Open-source political research on **Graham Platner**, Maine Democratic U.S. Senate candidate challenging Susan Collins. Interactive fediverse discourse landscape of progressive-left camps, debate axes, and scandal timeline.
 
 ## Contents
 
 | Path | Description |
 |------|-------------|
-| [`index.html`](index.html) | Landing page |
-| [`landscape.html`](landscape.html) | Interactive progressive-left landscape (vanilla JS port of Cursor canvas) |
-| [`analysis.html`](analysis.html) | Opposition research dossier rendered from markdown |
-| [`docs/platner.md`](docs/platner.md) | Full dossier source |
+| [`index.html`](index.html) | Interactive progressive-left landscape (vanilla JS port of Cursor canvas) |
 | [`js/data.js`](js/data.js) | Landscape data |
 | [`assets/css/site.css`](assets/css/site.css) | Site styles |
-| [`vercel.json`](vercel.json) | Vercel routing and headers |
+| [`vercel.json`](vercel.json) | Vercel redirects and headers |
 
 ## Local preview
 
-Static files must be served over HTTP (`fetch` for markdown will not work from `file://`).
+Static files must be served over HTTP.
 
 ```bash
 npx serve .
@@ -35,7 +32,7 @@ Then open `http://localhost:3000` (serve) or `http://localhost:8080`.
 5. Output directory: `.` (root)
 6. Deploy.
 
-[`vercel.json`](vercel.json) provides clean routes for `/landscape` and `/analysis`.
+[`vercel.json`](vercel.json) redirects legacy `/landscape` and `/analysis` URLs to `/`.
 
 ## License
 

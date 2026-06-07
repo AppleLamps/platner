@@ -1,7 +1,7 @@
 {
-  "rewrites": [
-    { "source": "/landscape", "destination": "/landscape.html" },
-    { "source": "/analysis", "destination": "/analysis.html" }
+  "redirects": [
+    { "source": "/landscape", "destination": "/", "permanent": true },
+    { "source": "/analysis", "destination": "/", "permanent": true }
   ],
   "headers": [
     {

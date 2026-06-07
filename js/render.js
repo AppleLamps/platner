@@ -366,7 +366,7 @@ function renderFooter(container) {
     el("p", {
       className: "tertiary",
       textContent:
-        "Synthesis from platner.md · Positions reflect what people argued, not verified fact about Platner's biography or future behavior · feddit page 26+ returns empty as of review date",
+        "Synthesis from fediverse discourse research · Positions reflect what people argued, not verified fact about Platner's biography or future behavior · feddit page 26+ returns empty as of review date",
     }),
   ]));
 }
