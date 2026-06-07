@@ -1,20 +1,12 @@
 import { LANDSCAPE } from "./data.js";
-
-const SWATCH_CLASS = {
-  green: "swatch-green",
-  yellow: "swatch-yellow",
-  pink: "swatch-pink",
-  blue: "swatch-blue",
-  gray: "swatch-gray",
-};
-
-const SEG_CLASS = {
-  green: "seg-green",
-  yellow: "seg-yellow",
-  pink: "seg-pink",
-  blue: "seg-blue",
-  gray: "seg-gray",
-};
+import {
+  renderDonutChart,
+  renderStackedBar,
+  renderDivergingBars,
+  renderScatterPlot,
+  renderTimelineChart,
+  colorFor,
+} from "./charts.js";
 
 function el(tag, attrs = {}, children = []) {
   const node = document.createElement(tag);
@@ -33,31 +25,12 @@ function el(tag, attrs = {}, children = []) {
 }
 
 function swatch(color) {
-  return el("span", { className: `swatch ${SWATCH_CLASS[color] || "swatch-gray"}` });
-}
-
-function usageBar(topLeft, topRight, segments, total = 100) {
-  const track = el("div", { className: "usage-bar-track" });
-  for (const seg of segments) {
-    const width = (seg.value / total) * 100;
-    track.appendChild(el("div", {
-      className: `usage-bar-seg ${SEG_CLASS[seg.color] || ""}`,
-      style: `width:${width}%`,
-      title: `${seg.label || seg.id}: ${seg.value}%`,
-    }));
-  }
-  return el("div", { className: "usage-bar" }, [
-    el("div", { className: "usage-bar-labels" }, [
-      el("span", { textContent: topLeft }),
-      el("span", { textContent: topRight }),
-    ]),
-    track,
-  ]);
+  return el("span", { className: "swatch", style: `background:${colorFor(color)}` });
 }
 
 function renderHero(container) {
   const { meta } = LANDSCAPE;
-  container.appendChild(el("section", { className: "card card-lg" }, [
+  container.appendChild(el("section", { className: "hero card card-lg" }, [
     el("div", { className: "grid-hero" }, [
       el("div", { className: "stack-sm" }, [
         el("h1", { textContent: "Graham Platner on the Fediverse Progressive Left" }),
@@ -92,57 +65,39 @@ function renderHero(container) {
 
 function renderCampSpectrum(container) {
   const { campSpectrum, meta } = LANDSCAPE;
-  const legend = el("div", { className: "stack-sm" });
+  const legend = el("div", { className: "donut-legend" });
   for (const s of campSpectrum.segments) {
     legend.appendChild(el("div", { className: "legend-row" }, [
       el("span", { className: "legend-left" }, [swatch(s.color), el("span", { textContent: s.label })]),
-      el("span", { className: "tertiary", textContent: `${s.value}%` }),
+      el("span", { className: "legend-value", textContent: `${s.value}%` }),
     ]));
   }
-  container.appendChild(el("div", { className: "grid-split" }, [
-    el("section", { className: "card" }, [
-      el("div", { className: "card-header", textContent: "Camp emphasis in discourse" }),
-      usageBar("Estimated discourse emphasis", "100% of weighted commentary", campSpectrum.segments, campSpectrum.total),
+  const donutCard = el("section", { className: "card" }, [
+    el("div", { className: "card-header", textContent: "Camp emphasis in discourse" }),
+    el("div", { className: "donut-layout" }, [
+      renderDonutChart(campSpectrum.segments, { centerLabel: "5", centerSub: "camps" }),
       legend,
-      el("p", {
-        className: "tertiary",
-        textContent: "Estimated emphasis in progressive fediverse discourse on large instances - not vote share or polling.",
-      }),
     ]),
+    renderStackedBar(campSpectrum.segments, { total: campSpectrum.total }),
+    el("p", {
+      className: "tertiary",
+      textContent: "Estimated emphasis in progressive fediverse discourse on large instances — not vote share or polling.",
+    }),
+  ]);
+  container.appendChild(el("div", { className: "grid-split" }, [
+    donutCard,
     renderStanceMapCard(meta),
   ]));
 }
 
 function renderStanceMapCard(meta) {
-  const map = el("div", { className: "stance-map" });
-  const axes = [
-    { text: "Disqualify", style: "left:12px;bottom:10px" },
-    { text: "Use electorally", style: "right:12px;bottom:10px" },
-    { text: "More trust", style: "left:12px;top:10px" },
-    { text: "Less trust", style: "left:12px;top:50%;transform:translateY(-50%)" },
-  ];
-  for (const a of axes) {
-    const node = el("span", { className: "stance-map-axis", textContent: a.text });
-    node.style.cssText = a.style;
-    map.appendChild(node);
-  }
-  for (const p of LANDSCAPE.stanceMap) {
-    const point = el("div", {
-      className: "stance-point",
-      style: `left:${p.x}%;top:${p.y}%`,
-    }, [
-      el("div", { className: "stance-point-title" }, [swatch(p.color), el("span", { textContent: p.label })]),
-      el("div", { className: "tertiary", textContent: p.note }),
-    ]);
-    map.appendChild(point);
-  }
   return el("section", { className: "card" }, [
     el("div", { className: "card-header", textContent: "Stance map" }),
     el("p", {
       className: "muted",
       textContent: `X-axis: disqualifying candidate → usable nominee · Y-axis: lower trust → higher movement trust · Source: ${meta.source}`,
     }),
-    map,
+    renderScatterPlot(LANDSCAPE.stanceMap),
     el("p", {
       className: "tertiary",
       textContent:
@@ -204,29 +159,23 @@ function renderCamps(container) {
 
 function renderInstanceSplit(container) {
   const { instanceSplit, meta } = LANDSCAPE;
-  const section = el("section", { className: "stack-sm" }, [
+  container.appendChild(el("section", { className: "stack-sm card card-chart" }, [
     el("h2", { textContent: "Instance and space split" }),
     el("p", {
       className: "section-caption",
-      textContent: `Estimated discourse lean by instance / space · Each bar: support % / reject % · Source: ${meta.source}`,
+      textContent: `Estimated discourse lean by instance / space · Source: ${meta.source}`,
     }),
-    el("div", { className: "instance-legend" }, [
-      el("span", {}, [swatch("green"), " Support-leaning"]),
+    el("div", { className: "diverging-legend" }, [
       el("span", {}, [swatch("pink"), " Reject-leaning"]),
+      el("span", {}, [swatch("green"), " Support-leaning"]),
     ]),
-  ]);
-  for (const row of instanceSplit) {
-    section.appendChild(usageBar(row.label, `${row.support}% / ${row.reject}%`, [
-      { id: "support", value: row.support, color: "green" },
-      { id: "reject", value: row.reject, color: "pink" },
-    ]));
-  }
-  section.appendChild(el("p", {
-    className: "tertiary",
-    textContent:
-      "Two lefts talking past each other: lemmy.world leans pragmatic support; lemmy.ml leans hard rejection. Trans / identity-focused spaces hold a higher bar for leaders.",
-  }));
-  container.appendChild(section);
+    renderDivergingBars(instanceSplit),
+    el("p", {
+      className: "tertiary",
+      textContent:
+        "Two lefts talking past each other: lemmy.world leans pragmatic support; lemmy.ml leans hard rejection. Trans / identity-focused spaces hold a higher bar for leaders.",
+    }),
+  ]));
 }
 
 function renderDebateMatrix(container) {
@@ -255,76 +204,34 @@ function renderDebateMatrix(container) {
 
 function renderTimeline(container) {
   const { timeline, meta } = LANDSCAPE;
-  const w = 640;
-  const h = 200;
-  const pad = { l: 40, r: 16, t: 16, b: 32 };
-  const innerW = w - pad.l - pad.r;
-  const innerH = h - pad.t - pad.b;
-  const maxY = 100;
-  const pts = timeline.intensity.map((v, i) => {
-    const x = pad.l + (i / (timeline.intensity.length - 1)) * innerW;
-    const y = pad.t + innerH - (v / maxY) * innerH;
-    return `${x},${y}`;
-  }).join(" ");
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-  svg.setAttribute("class", "timeline-chart");
-  const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-  const fillPts = `${pad.l},${pad.t + innerH} ${pts} ${pad.l + innerW},${pad.t + innerH}`;
-  poly.setAttribute("points", fillPts);
-  poly.setAttribute("fill", "rgba(37,99,235,0.12)");
-  svg.appendChild(poly);
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-  line.setAttribute("points", pts);
-  line.setAttribute("fill", "none");
-  line.setAttribute("stroke", "#2563eb");
-  line.setAttribute("stroke-width", "2");
-  svg.appendChild(line);
-  timeline.categories.forEach((cat, i) => {
-    const x = pad.l + (i / (timeline.categories.length - 1)) * innerW;
-    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", x);
-    text.setAttribute("y", h - 8);
-    text.setAttribute("text-anchor", "middle");
-    text.setAttribute("font-size", "10");
-    text.setAttribute("fill", "#5c6570");
-    text.textContent = cat;
-    svg.appendChild(text);
-  });
-  const refY = pad.t + innerH - (90 / maxY) * innerH;
-  const refLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  refLine.setAttribute("x1", pad.l);
-  refLine.setAttribute("x2", pad.l + innerW);
-  refLine.setAttribute("y1", refY);
-  refLine.setAttribute("y2", refY);
-  refLine.setAttribute("stroke", "#ca8a04");
-  refLine.setAttribute("stroke-dasharray", "4,4");
-  svg.appendChild(refLine);
   const events = el("ul", { className: "timeline-events" });
   for (const e of timeline.events) {
     events.appendChild(el("li", {}, [
       el("span", { className: "timeline-month", textContent: e.month }),
       el("div", {}, [
-        el("div", { textContent: e.label }),
+        el("div", { className: "timeline-event-label", textContent: e.label }),
         el("div", { className: "timeline-note", textContent: e.note }),
       ]),
     ]));
   }
-  container.appendChild(el("section", { className: "grid-timeline" }, [
+  container.appendChild(el("section", { className: "grid-timeline card card-chart" }, [
     el("div", { className: "stack-sm" }, [
-      el("h2", { textContent: "Scandal timeline - discourse intensity" }),
+      el("h2", { textContent: "Scandal timeline — discourse intensity" }),
       el("p", {
         className: "section-caption",
-        textContent: `Relative discourse intensity over time · X-axis: month · Y-axis: intensity index (relative, 0-100) · Source: ${meta.source}`,
+        textContent: `Relative discourse intensity over time · Intensity index 0–100 · Source: ${meta.source}`,
       }),
-      svg,
+      renderTimelineChart(timeline),
       el("p", {
         className: "tertiary",
         textContent:
-          "Oct-Nov 2025 tattoo and Reddit scandal set permanent camps. June 2026 abuse allegations deepened skepticism but did not collapse the pragmatic coalition - Heritage/Kavanaugh accuser framing pre-loaded.",
+          "Oct–Nov 2025 tattoo and Reddit scandal set permanent camps. June 2026 abuse allegations deepened skepticism but did not collapse the pragmatic coalition — Heritage/Kavanaugh accuser framing pre-loaded.",
       }),
     ]),
-    el("div", {}, [el("h3", { textContent: "Key inflection points" }), events]),
+    el("div", { className: "timeline-sidebar" }, [
+      el("h3", { textContent: "Key inflection points" }),
+      events,
+    ]),
   ]));
 }
 
