@@ -329,7 +329,7 @@ export function renderTimelineChart(timeline) {
         y: y + 4,
         class: "timeline-peak-label",
       });
-      peakLabel.textContent = "Oct peak";
+      peakLabel.textContent = "Peaks";
       svg.appendChild(peakLabel);
     }
   }

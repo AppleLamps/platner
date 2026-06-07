@@ -1,8 +1,8 @@
 export const LANDSCAPE = {
   meta: {
-    source: "feddit.dk platner search, pages 1-25, sort=New",
+    source: "feddit.dk platner search (pages 1-25) + Reddit scrape (6 threads, r/Maine et al.)",
     subject: "Graham Platner - Maine Democratic Senate candidate vs. Susan Collins",
-    note: "Qualitative discourse weights, not polls or vote share",
+    note: "Qualitative discourse weights, not polls or vote share; anti-imperialist and anarchist camps are fediverse-heavy, thin on Reddit",
   },
   campSpectrum: {
     total: 100,
@@ -24,10 +24,13 @@ export const LANDSCAPE = {
       forPoints: [
         "Best instrument to beat Collins and shift policy on M4A, Gaza, wealth tax, anti-AIPAC",
         "Scandals framed as hit jobs from AIPAC, pro-Collins money, GOP, and establishment oppo",
-        "Mamdani parallel: scandal-heavy populist who wins if economic message lands",
+        "Mamdani parallel: scandal-heavy populist who wins if economic message lands; NYT oppo backfire",
         "Town halls, labor language, and local campaign work cited as real policy competence",
         "Redemption arc plausible - Marine to oyster farmer to anti-oligarch candidate",
         "Bernie, AFL-CIO, Common Defense endorsements cited as legitimacy",
+        "Gideon lesson: Maine rejected normie centrism in 2020; vote who you actually want",
+        "Senate-flip instrumentalism - tool to win back chamber, not movement leader",
+        "Genocide-first deflection on r/portlandme - Gaza/AIPAC matters more than sexts",
       ],
       againstPoints: ["Internal caveats only: still flawed, not a trusted movement leader"],
     },
@@ -49,6 +52,9 @@ export const LANDSCAPE = {
         "Do not organize for him - watch like a hawk if voting",
         "Smith-Rodriguez / Costello alternatives with less baggage were not mobilized",
         "Trust has to be earned over time through discipline, accountability, and votes",
+        "Swing-women electability - moderate apolitical women may be alienated by sexting",
+        "Ticking-time-bomb scenario - Senate resignation plus GOP governor appointing replacement",
+        "Nose-plug vote: hold nose and vote, but stop donating and volunteering",
       ],
     },
     {
@@ -77,6 +83,8 @@ export const LANDSCAPE = {
         "Schumer/DSCC backed Mills; dirty oppo ran; Mills dropped when polls collapsed",
         "AIPAC / pro-Collins / corporate-Dem attacks prove he is a real threat",
         "Populist who survived scandal wave while holding policy line",
+        "Explicit AIPAC/NYT/Heritage coordination frame - anti-anti-genocide campaign",
+        "Anticlimax relief after rumored SA story - NYT exes piece underwhelmed supporters",
       ],
       againstPoints: [
         "Skeptics cite Schumer eventually working with Platner as proof he is inside the tent",
@@ -117,18 +125,22 @@ export const LANDSCAPE = {
     ["Fight Agency", "They fear him; coincidence with Mamdani", "Manufactured candidate; sheepdog"],
     ["Schumer tie", "Proves establishment feared him", "Proves he is inside the tent"],
     ["Policy vs. character", "Judge M4A, Gaza, wealth tax, town-hall competence", "Judge actions; words are cheap; trust must be earned"],
-    ["Fifield / abuse", "GOP operative hit job", "Pattern of behavior across scandals"],
+    ["Fifield / abuse", "Heritage/Kavanaugh operative; diary-only; anticlimax vs. rumored SA", "Pattern of behavior; domestic-violence gloss in NYT framing"],
+    ["Sexting scandal", "Old news; couple worked through it; press malpractice; bar on the floor vs. Trump/Epstein", "Character signal; Senate resignation risk plus GOP governor appointing replacement; more shoes to drop"],
+    ["Sarah Gideon / polling", "Polls lied before; vote who you actually want", "Platner lead may evaporate like Gideon; Collins always overperforms"],
+    ["Job vs. biography", "Fight for US not THEM - judge Senate votes, not private life", "Women and Jewish-safety issues are policy; Franken-standard collapse risk"],
+    ["Class authenticity", "Oyster farmer, veteran, working-class message resonates", "Hotchkiss, daddy-bought VA house, fake working-class performance"],
     ["Alternative candidates", "Collins / Mills only viable opponents", "Costello, Smith-Rodriguez, ranked choice unused"],
     ["Hegseth / Trump", "Hypocrisy to focus on Platner ink", "Platner undermines Nazi attacks on the right"],
   ],
   timeline: {
     categories: ["Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Jan 2026", "Apr 2026", "Jun 2026"],
-    intensity: [25, 35, 95, 80, 45, 55, 70],
+    intensity: [25, 35, 95, 80, 45, 55, 95],
     events: [
       { month: "Aug 2025", label: "Campaign launch", note: "Early anti-imperialist skepticism" },
       { month: "Oct 2025", label: "Tattoo + Reddit peak", note: "Camps crystallize - permanent split" },
       { month: "Apr 2026", label: "Mills dropout", note: "Pragmatic camp vindicated" },
-      { month: "Jun 2026", label: "NYT abuse / Fifield", note: "Pragmatic holds; skeptics deepen" },
+      { month: "Jun 2026", label: "Sexting disclosure + NYT exes", note: "WSJ/NBC wife video; definitional cheating war; pragmatic camp holds via Collins/Gaza whataboutism" },
     ],
   },
   nearConsensus: [
@@ -139,6 +151,10 @@ export const LANDSCAPE = {
     "No organized alternative emerged - Costello, Smith-Rodriguez, ranked-choice coalitions discussed but not built",
     "Biography is the battleground - not whether Maine needs a progressive senator in abstract",
     "Trust is conditional - many sympathetic voices still want discipline, accountability, and real votes",
+    "Maine voters rejected the normie Dem path in 2020 (Gideon) - appetite for authentic/populist candidate is real",
+    "Collins consistently overperforms polls - current Platner leads are treated with caution",
+    "Sexting scandal (Jun 2026) reframed as old news / press agenda by pragmatists; skeptics treat it as electability and character risk",
+    "National Reddit threads are often non-Mainers - Maine-local voices emphasize town halls and ground game over online purity fights",
   ],
   institutionalLayer: [
     ["Bernie Sanders", "Pragmatic legitimacy; skeptics wonder if endorsement erases red flags"],
@@ -147,5 +163,9 @@ export const LANDSCAPE = {
     ["Jacobin", "Bulk-of-posts defense for pragmatists; ML instances attack as lying"],
     ["AIPAC / pro-Collins PACs", "Funding opposition research - more common hit-job frame than direct intelligence claims"],
     ["Mamdani", "Survivable scandal template for defenders; authenticity benchmark Platner fails for skeptics"],
+    ["NYT / WSJ / NBC", "Relationship reporting plus wife disclosure; hit job vs. accountability"],
+    ["Heritage Foundation / Carrie Severino", "Fifield credibility war - Kavanaugh-era operative sourcing"],
+    ["Sarah Gideon (2020)", "Cautionary template for poll-led optimism; normie Dem lost by 9"],
+    ["Genevieve MacDonald", "Cited in discourse as Maine-local oppo source via campaign director leak"],
   ],
 };

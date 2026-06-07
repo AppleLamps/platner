@@ -1,6 +1,6 @@
 # Platner Research
 
-Open-source political research on **Graham Platner**, Maine Democratic U.S. Senate candidate challenging Susan Collins. Interactive fediverse discourse landscape of progressive-left camps, debate axes, and scandal timeline.
+Open-source political research on **Graham Platner**, Maine Democratic U.S. Senate candidate challenging Susan Collins. Interactive discourse landscape of progressive-left camps, debate axes, and scandal timeline — synthesized from fediverse (feddit.dk) and Reddit (`reddit-platner/`) sources.
 
 ## Contents
 
@@ -8,6 +8,7 @@ Open-source political research on **Graham Platner**, Maine Democratic U.S. Sena
 |------|-------------|
 | [`index.html`](index.html) | Interactive progressive-left landscape (vanilla JS port of Cursor canvas) |
 | [`js/data.js`](js/data.js) | Landscape data |
+| [`reddit-platner/`](reddit-platner/) | Reddit thread scrape (supplementary source) |
 | [`assets/css/site.css`](assets/css/site.css) | Site styles |
 | [`vercel.json`](vercel.json) | Vercel redirects and headers |
 

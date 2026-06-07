@@ -28,20 +28,43 @@ function swatch(color) {
   return el("span", { className: "swatch", style: `background:${colorFor(color)}` });
 }
 
+const SECTIONS = [
+  { id: "overview", label: "Overview" },
+  { id: "camps", label: "Camps" },
+  { id: "fediverse", label: "Fediverse" },
+  { id: "debates", label: "Debates" },
+  { id: "timeline", label: "Timeline" },
+  { id: "consensus", label: "Consensus" },
+];
+
+function section(id, className, children) {
+  return el("section", { id, className }, children);
+}
+
+function renderSectionNav() {
+  const nav = document.getElementById("section-nav");
+  if (!nav) return;
+  for (const { id, label } of SECTIONS) {
+    nav.appendChild(el("a", { href: `#${id}`, textContent: label }));
+  }
+}
+
 function renderHero(container) {
   const { meta } = LANDSCAPE;
-  container.appendChild(el("section", { className: "hero card card-lg" }, [
+  container.appendChild(section("overview", "hero card card-lg", [
     el("div", { className: "grid-hero" }, [
       el("div", { className: "stack-sm" }, [
-        el("h1", { textContent: "Graham Platner on the Fediverse Progressive Left" }),
-        el("p", {
-          className: "muted",
-          textContent: `${meta.subject} · Source: ${meta.source} · ${meta.note}`,
-        }),
+        el("h1", { textContent: "Graham Platner — Progressive Left Discourse Landscape" }),
+        el("p", { className: "muted", textContent: meta.subject }),
+        el("div", { className: "source-badges" }, [
+          el("span", { className: "badge badge-fediverse", textContent: "Fediverse · feddit.dk" }),
+          el("span", { className: "badge badge-reddit", textContent: "Reddit · 6 threads" }),
+        ]),
+        el("p", { className: "tertiary hero-note", textContent: meta.note }),
         el("div", { className: "callout callout-info" }, [
           el("p", {
             textContent:
-              "The fediverse progressive left wants Platner's policies in the Senate and does not want Platner the person as a movement leader. Whether those can be separated long enough to beat Susan Collins without producing another Fetterman is the unresolved question.",
+              "The fediverse progressive left wants Platner's policies in the Senate and does not want Platner the person as a movement leader. Reddit adds an electoral-pragmatism layer: Maine voters weighing Collins overperformance, Gideon polling trauma, and whether June 2026 scandals change the math. Whether policy and person can be separated long enough to beat Collins without producing another Fetterman is the unresolved question.",
           }),
         ]),
       ]),
@@ -51,8 +74,8 @@ function renderHero(container) {
           el("div", { className: "stat-label", textContent: "Progressive-left clusters" }),
         ]),
         el("div", { className: "stat stat-success" }, [
-          el("div", { className: "stat-value", textContent: "25 pages" }),
-          el("div", { className: "stat-label", textContent: "feddit.dk search reviewed" }),
+          el("div", { className: "stat-value", textContent: "2 sources" }),
+          el("div", { className: "stat-label", textContent: "Fediverse + Reddit (6 threads)" }),
         ]),
         el("div", { className: "stat stat-warning" }, [
           el("div", { className: "stat-value", textContent: "Earn trust" }),
@@ -81,7 +104,7 @@ function renderCampSpectrum(container) {
     renderStackedBar(campSpectrum.segments, { total: campSpectrum.total }),
     el("p", {
       className: "tertiary",
-      textContent: "Estimated emphasis in progressive fediverse discourse on large instances — not vote share or polling.",
+      textContent: "Estimated emphasis in fediverse discourse on large instances — Reddit skews more pragmatic/electoral; not vote share or polling.",
     }),
   ]);
   container.appendChild(el("div", { className: "grid-split" }, [
@@ -107,15 +130,15 @@ function renderStanceMapCard(meta) {
 }
 
 function renderCamps(container) {
-  const section = el("section", { className: "stack-sm" }, [
+  const campSection = section("camps", "stack-sm", [
     el("h2", { textContent: "The five camps" }),
     el("p", {
       className: "section-caption",
-      textContent: "Argument clusters from fediverse discourse - no individual voices. Camp sections are open by default for scanning.",
+      textContent: "Argument clusters from fediverse and Reddit discourse — no individual voices. Top three camps open by default; expand others to scan.",
     }),
     el("div", { className: "grid-2" }),
   ]);
-  const grid = section.querySelector(".grid-2");
+  const grid = campSection.querySelector(".grid-2");
   for (const camp of LANDSCAPE.camps) {
     const body = el("div", { className: "camp-body" }, [
       el("p", { innerHTML: `<strong>Theory of change:</strong> ${camp.theory}` }),
@@ -132,7 +155,9 @@ function renderCamps(container) {
       camp.againstPoints.forEach((p, i) => ol.appendChild(el("li", { textContent: `${i + 1}. ${p}` })));
       body.appendChild(ol);
     }
-    const details = el("details", { className: "camp-details", open: "" });
+    const detailsAttrs = { className: "camp-details" };
+    if (camp.emphasis >= 25) detailsAttrs.open = "";
+    const details = el("details", detailsAttrs);
     const summary = el("summary");
     summary.setAttribute("data-emphasis", `${camp.emphasis}% emphasis`);
     summary.appendChild(swatch(camp.swatchColor));
@@ -141,29 +166,29 @@ function renderCamps(container) {
     details.appendChild(body);
     grid.appendChild(details);
   }
-  section.appendChild(el("div", { className: "card" }, [
+  campSection.appendChild(el("div", { className: "card" }, [
     el("p", {
       className: "muted",
       innerHTML:
-        "<strong>Maine ground game note:</strong> Maine-adjacent voices emphasize town halls, yard signs, and anti-Washington mood over chronically online purity fights. National critics insist biography matters for a national Senate seat and movement credibility.",
+        "<strong>Maine ground game note:</strong> Reddit's r/Maine voices emphasize town halls, all-ages base energy, and anti-Washington mood over chronically online purity fights. Many reject repeating the Sarah Gideon normie-Dem path after 2020. Skeptics counter that Collins overperforms polls and swing women may be alienated by sexting. National thread participants are often non-Mainers — Maine-local organizers treat ground game as the real signal.",
     }),
   ]));
-  section.appendChild(el("div", { className: "callout callout-info" }, [
+  campSection.appendChild(el("div", { className: "callout callout-info" }, [
     el("p", {
       textContent:
         "The strongest middle position is not \"trust Platner.\" It is \"use him if necessary, then make him earn trust over time through discipline, policy work, reparative accountability, and actual votes.\"",
     }),
   ]));
-  container.appendChild(section);
+  container.appendChild(campSection);
 }
 
 function renderInstanceSplit(container) {
-  const { instanceSplit, meta } = LANDSCAPE;
-  container.appendChild(el("section", { className: "stack-sm card card-chart" }, [
+  const { instanceSplit } = LANDSCAPE;
+  container.appendChild(section("fediverse", "stack-sm card card-chart", [
     el("h2", { textContent: "Instance and space split" }),
     el("p", {
       className: "section-caption",
-      textContent: `Estimated discourse lean by instance / space · Source: ${meta.source}`,
+      textContent: `Estimated discourse lean by instance / space (fediverse only — Reddit lacks this ideological split) · Source: feddit.dk`,
     }),
     el("div", { className: "diverging-legend" }, [
       el("span", {}, [swatch("pink"), " Reject-leaning"]),
@@ -191,11 +216,15 @@ function renderDebateMatrix(container) {
   const tbody = el("tbody");
   for (const row of debateMatrix) {
     const tr = el("tr");
-    row.forEach((cell) => tr.appendChild(el("td", { textContent: cell })));
+    row.forEach((cell, i) => {
+      const td = el("td", { textContent: cell });
+      if (i === 0) td.className = "topic-cell";
+      tr.appendChild(td);
+    });
     tbody.appendChild(tr);
   }
   table.appendChild(tbody);
-  container.appendChild(el("section", { className: "stack-sm" }, [
+  container.appendChild(section("debates", "stack-sm", [
     el("h2", { textContent: "Recurring debate matrix" }),
     el("p", { className: "section-caption", textContent: `Core argument pairs mapped across camps · Source: ${meta.source}` }),
     el("div", { className: "table-wrap" }, [table]),
@@ -214,7 +243,7 @@ function renderTimeline(container) {
       ]),
     ]));
   }
-  container.appendChild(el("section", { className: "grid-timeline card card-chart" }, [
+  container.appendChild(section("timeline", "grid-timeline card card-chart", [
     el("div", { className: "stack-sm" }, [
       el("h2", { textContent: "Scandal timeline — discourse intensity" }),
       el("p", {
@@ -225,7 +254,7 @@ function renderTimeline(container) {
       el("p", {
         className: "tertiary",
         textContent:
-          "Oct–Nov 2025 tattoo and Reddit scandal set permanent camps. June 2026 abuse allegations deepened skepticism but did not collapse the pragmatic coalition — Heritage/Kavanaugh accuser framing pre-loaded.",
+          "Oct–Nov 2025 tattoo and Reddit history set permanent fediverse camps. June 2026 sexting disclosure and NYT exes piece dominated Reddit discourse at intensity matching the tattoo peak — pragmatic camp held via Collins/Gaza whataboutism; skeptics deepened electability concerns.",
       }),
     ]),
     el("div", { className: "timeline-sidebar" }, [
@@ -251,7 +280,7 @@ function renderFooter(container) {
   instTable.appendChild(ibody);
   const ol = el("ol", { className: "consensus-list" });
   nearConsensus.forEach((item) => ol.appendChild(el("li", { textContent: item })));
-  container.appendChild(el("section", { className: "stack-sm" }, [
+  container.appendChild(section("consensus", "stack-sm", [
     el("h2", { textContent: "Near-consensus and institutional layer" }),
     el("p", {
       className: "section-caption",
@@ -267,19 +296,34 @@ function renderFooter(container) {
     el("div", { className: "callout callout-warning" }, [
       el("p", {
         textContent:
-          "Movement energy trends toward using Platner as an electoral vehicle (pragmatists, Maine organizers, institutional endorsements). Ideological energy trends toward treating support as a litmus-test failure (anti-imperialists, tattoo hardliners, anarchists). The bridge camp wants him watched, not celebrated.",
+          "Movement energy trends toward using Platner as an electoral vehicle (pragmatists, Maine organizers, institutional endorsements). Reddit amplifies Senate-flip instrumentalism and Gideon lessons; fediverse ideological energy trends toward treating support as a litmus-test failure (anti-imperialists, tattoo hardliners, anarchists). The bridge camp wants him watched, not celebrated.",
       }),
     ]),
     el("p", {
       className: "tertiary",
+        textContent:
+        "Synthesis from fediverse and Reddit discourse research · Positions reflect what people argued, not verified fact about Platner's biography or future behavior · Reddit scrape: 6 unique threads in reddit-platner/ · feddit page 26+ returns empty as of review date",
+    }),
+  ]));
+}
+
+function renderSiteFooter(container) {
+  container.appendChild(el("footer", { className: "site-footer" }, [
+    el("p", {
+      className: "site-footer-disclaimer",
       textContent:
-        "Synthesis from fediverse discourse research · Positions reflect what people argued, not verified fact about Platner's biography or future behavior · feddit page 26+ returns empty as of review date",
+        "Research synthesis for educational and political analysis. Positions reflect what people argued in fediverse and Reddit discourse — not verified fact about Platner's biography or future behavior.",
+    }),
+    el("p", {
+      className: "tertiary",
+      textContent: "Verify claims against primary sources before paid media or legal use.",
     }),
   ]));
 }
 
 export function renderLandscape(root) {
   root.innerHTML = "";
+  renderSectionNav();
   const stack = el("div", { className: "stack" });
   renderHero(stack);
   renderCampSpectrum(stack);
@@ -293,5 +337,6 @@ export function renderLandscape(root) {
   renderTimeline(stack);
   stack.appendChild(el("hr", { className: "divider" }));
   renderFooter(stack);
+  renderSiteFooter(stack);
   root.appendChild(stack);
 }
