@@ -10,9 +10,9 @@ Open-source political research on **Graham Platner**, Maine Democratic U.S. Sena
 | [`landscape.html`](landscape.html) | Interactive progressive-left landscape (vanilla JS port of Cursor canvas) |
 | [`analysis.html`](analysis.html) | Opposition research dossier rendered from markdown |
 | [`docs/platner.md`](docs/platner.md) | Full dossier source |
-| [`js/data.js`](js/data.js) | Landscape data (shared with web port) |
-| [`canvas/platner-left-landscape.canvas.tsx`](canvas/platner-left-landscape.canvas.tsx) | Cursor canvas source (IDE-only runtime) |
-| [`output/pdf/platner-opposition-research.pdf`](output/pdf/platner-opposition-research.pdf) | PDF export |
+| [`js/data.js`](js/data.js) | Landscape data |
+| [`assets/css/site.css`](assets/css/site.css) | Site styles |
+| [`vercel.json`](vercel.json) | Vercel routing and headers |
 
 ## Local preview
 
@@ -36,21 +36,6 @@ Then open `http://localhost:3000` (serve) or `http://localhost:8080`.
 6. Deploy.
 
 [`vercel.json`](vercel.json) provides clean routes for `/landscape` and `/analysis`.
-
-## Data sync note
-
-Cursor canvases must keep inline data (no relative imports). After editing the landscape:
-
-1. Update [`canvas/platner-left-landscape.canvas.tsx`](canvas/platner-left-landscape.canvas.tsx) (Cursor IDE)
-2. Mirror constants in [`js/data.js`](js/data.js) (web port)
-
-## PDF generation
-
-```bash
-python scripts/build_platner_pdf.py
-```
-
-Output: `output/pdf/platner-opposition-research.pdf`
 
 ## License
 

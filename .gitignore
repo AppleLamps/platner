@@ -1,5 +1,19 @@
+# OS / dependencies
 .DS_Store
 Thumbs.db
 node_modules/
-.cursor/hooks/state/
-tmp/pdfs/
+.vscode/
+
+# Cursor / agent tooling
+.cursor/
+AGENTS.md
+
+# Research tooling and artifacts (not served by the site)
+canvas/
+references/
+scripts/
+output/
+tmp/
+
+# Loose local files
+481784.png
