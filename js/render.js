@@ -44,8 +44,44 @@ function section(id, className, children) {
 function renderSectionNav() {
   const nav = document.getElementById("section-nav");
   if (!nav) return;
-  for (const { id, label } of SECTIONS) {
-    nav.appendChild(el("a", { href: `#${id}`, textContent: label }));
+  nav.replaceChildren();
+  for (const [index, { id, label }] of SECTIONS.entries()) {
+    const link = el("a", { href: `#${id}`, textContent: label });
+    if (index === 0) {
+      link.classList.add("is-active");
+      link.setAttribute("aria-current", "page");
+    }
+    nav.appendChild(link);
+  }
+}
+
+function hydrateSectionNav() {
+  const nav = document.getElementById("section-nav");
+  if (!nav) return;
+  const links = new Map(Array.from(nav.querySelectorAll("a")).map((link) => [link.hash.slice(1), link]));
+  const setActive = (id) => {
+    for (const [sectionId, link] of links) {
+      const active = sectionId === id;
+      link.classList.toggle("is-active", active);
+      if (active) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    }
+  };
+
+  if (!("IntersectionObserver" in window)) return;
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (visible?.target?.id) setActive(visible.target.id);
+  }, {
+    rootMargin: "-30% 0px -55% 0px",
+    threshold: [0.1, 0.35, 0.6],
+  });
+
+  for (const { id } of SECTIONS) {
+    const target = document.getElementById(id);
+    if (target) observer.observe(target);
   }
 }
 
@@ -54,6 +90,7 @@ function renderHero(container) {
   container.appendChild(section("overview", "hero card card-lg", [
     el("div", { className: "grid-hero" }, [
       el("div", { className: "stack-sm" }, [
+        el("p", { className: "eyebrow", textContent: "Progressive discourse synthesis" }),
         el("h1", { textContent: "Graham Platner — Progressive Left Discourse Landscape" }),
         el("p", { className: "muted", textContent: meta.subject }),
         el("div", { className: "source-badges" }, [
@@ -131,11 +168,13 @@ function renderStanceMapCard(meta) {
 
 function renderCamps(container) {
   const campSection = section("camps", "stack-sm", [
-    el("h2", { textContent: "The five camps" }),
-    el("p", {
-      className: "section-caption",
-      textContent: "Argument clusters from fediverse and Reddit discourse — no individual voices. Top three camps open by default; expand others to scan.",
-    }),
+    el("div", { className: "section-heading" }, [
+      el("h2", { textContent: "The five camps" }),
+      el("p", {
+        className: "section-caption",
+        textContent: "Argument clusters from fediverse and Reddit discourse — no individual voices. Top three camps open by default; expand others to scan.",
+      }),
+    ]),
     el("div", { className: "grid-2" }),
   ]);
   const grid = campSection.querySelector(".grid-2");
@@ -146,13 +185,13 @@ function renderCamps(container) {
     if (camp.forPoints.length) {
       body.appendChild(el("h4", { textContent: "Arguments for" }));
       const ol = el("ol");
-      camp.forPoints.forEach((p, i) => ol.appendChild(el("li", { textContent: `${i + 1}. ${p}` })));
+      camp.forPoints.forEach((p) => ol.appendChild(el("li", { textContent: p })));
       body.appendChild(ol);
     }
     if (camp.againstPoints.length) {
       body.appendChild(el("h4", { textContent: "Arguments against" }));
       const ol = el("ol");
-      camp.againstPoints.forEach((p, i) => ol.appendChild(el("li", { textContent: `${i + 1}. ${p}` })));
+      camp.againstPoints.forEach((p) => ol.appendChild(el("li", { textContent: p })));
       body.appendChild(ol);
     }
     const detailsAttrs = { className: "camp-details" };
@@ -185,11 +224,13 @@ function renderCamps(container) {
 function renderInstanceSplit(container) {
   const { instanceSplit } = LANDSCAPE;
   container.appendChild(section("fediverse", "stack-sm card card-chart", [
-    el("h2", { textContent: "Instance and space split" }),
-    el("p", {
-      className: "section-caption",
-      textContent: `Estimated discourse lean by instance / space (fediverse only — Reddit lacks this ideological split) · Source: feddit.dk`,
-    }),
+    el("div", { className: "section-heading" }, [
+      el("h2", { textContent: "Instance and space split" }),
+      el("p", {
+        className: "section-caption",
+        textContent: "Estimated discourse lean by instance / space (fediverse only — Reddit lacks this ideological split) · Source: feddit.dk",
+      }),
+    ]),
     el("div", { className: "diverging-legend" }, [
       el("span", {}, [swatch("pink"), " Reject-leaning"]),
       el("span", {}, [swatch("green"), " Support-leaning"]),
@@ -205,11 +246,12 @@ function renderInstanceSplit(container) {
 
 function renderDebateMatrix(container) {
   const { debateMatrix, meta } = LANDSCAPE;
-  const table = el("table", { className: "data-table" });
+  const table = el("table", { className: "data-table debate-table" });
+  table.appendChild(el("caption", { className: "sr-only", textContent: "Recurring pro-Platner and anti-Platner arguments by topic" }));
   const thead = el("thead");
   const hr = el("tr");
   ["Topic", "Pro-Platner / pragmatic", "Anti-Platner / skeptical"].forEach((h) =>
-    hr.appendChild(el("th", { textContent: h }))
+    hr.appendChild(el("th", { scope: "col", textContent: h }))
   );
   thead.appendChild(hr);
   table.appendChild(thead);
@@ -217,16 +259,21 @@ function renderDebateMatrix(container) {
   for (const row of debateMatrix) {
     const tr = el("tr");
     row.forEach((cell, i) => {
-      const td = el("td", { textContent: cell });
-      if (i === 0) td.className = "topic-cell";
-      tr.appendChild(td);
+      const cellNode = el(i === 0 ? "th" : "td", { textContent: cell });
+      if (i === 0) {
+        cellNode.className = "topic-cell";
+        cellNode.setAttribute("scope", "row");
+      }
+      tr.appendChild(cellNode);
     });
     tbody.appendChild(tr);
   }
   table.appendChild(tbody);
   container.appendChild(section("debates", "stack-sm", [
-    el("h2", { textContent: "Recurring debate matrix" }),
-    el("p", { className: "section-caption", textContent: `Core argument pairs mapped across camps · Source: ${meta.source}` }),
+    el("div", { className: "section-heading" }, [
+      el("h2", { textContent: "Recurring debate matrix" }),
+      el("p", { className: "section-caption", textContent: `Core argument pairs mapped across camps · Source: ${meta.source}` }),
+    ]),
     el("div", { className: "table-wrap" }, [table]),
   ]));
 }
@@ -245,11 +292,13 @@ function renderTimeline(container) {
   }
   container.appendChild(section("timeline", "grid-timeline card card-chart", [
     el("div", { className: "stack-sm" }, [
-      el("h2", { textContent: "Scandal timeline — discourse intensity" }),
-      el("p", {
-        className: "section-caption",
-        textContent: `Relative discourse intensity over time · Intensity index 0–100 · Source: ${meta.source}`,
-      }),
+      el("div", { className: "section-heading" }, [
+        el("h2", { textContent: "Scandal timeline — discourse intensity" }),
+        el("p", {
+          className: "section-caption",
+          textContent: `Relative discourse intensity over time · Intensity index 0–100 · Source: ${meta.source}`,
+        }),
+      ]),
       renderTimelineChart(timeline),
       el("p", {
         className: "tertiary",
@@ -267,13 +316,14 @@ function renderTimeline(container) {
 function renderFooter(container) {
   const { nearConsensus, institutionalLayer } = LANDSCAPE;
   const instTable = el("table", { className: "data-table" });
+  instTable.appendChild(el("caption", { className: "sr-only", textContent: "Institutions and how discourse cites them" }));
   const ihead = el("tr");
-  ["Actor", "How discourse uses them"].forEach((h) => ihead.appendChild(el("th", { textContent: h })));
+  ["Actor", "How discourse uses them"].forEach((h) => ihead.appendChild(el("th", { scope: "col", textContent: h })));
   instTable.appendChild(el("thead", {}, [ihead]));
   const ibody = el("tbody");
   for (const [actor, role] of institutionalLayer) {
     const tr = el("tr");
-    tr.appendChild(el("td", { textContent: actor }));
+    tr.appendChild(el("th", { scope: "row", className: "topic-cell", textContent: actor }));
     tr.appendChild(el("td", { textContent: role }));
     ibody.appendChild(tr);
   }
@@ -281,11 +331,13 @@ function renderFooter(container) {
   const ol = el("ol", { className: "consensus-list" });
   nearConsensus.forEach((item) => ol.appendChild(el("li", { textContent: item })));
   container.appendChild(section("consensus", "stack-sm", [
-    el("h2", { textContent: "Near-consensus and institutional layer" }),
-    el("p", {
-      className: "section-caption",
-      textContent: "What nearly all camps accept, plus the outside validators and villains each side cites.",
-    }),
+    el("div", { className: "section-heading" }, [
+      el("h2", { textContent: "Near-consensus and institutional layer" }),
+      el("p", {
+        className: "section-caption",
+        textContent: "What nearly all camps accept, plus the outside validators and villains each side cites.",
+      }),
+    ]),
     el("div", { className: "grid-2 consensus-grid" }, [
       el("div", { className: "consensus-col" }, [
         el("h3", { textContent: "What almost everyone agrees on" }),
@@ -342,4 +394,5 @@ export function renderLandscape(root) {
   renderFooter(stack);
   renderSiteFooter(stack);
   root.appendChild(stack);
+  hydrateSectionNav();
 }

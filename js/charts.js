@@ -50,6 +50,9 @@ export function renderDonutChart(segments, { centerLabel = "", centerSub = "" } 
     role: "img",
     "aria-label": "Camp emphasis donut chart",
   });
+  const title = svgEl("title");
+  title.textContent = "Camp emphasis in discourse";
+  svg.appendChild(title);
 
   let angle = -Math.PI / 2;
   segments.forEach((seg, i) => {
@@ -79,6 +82,8 @@ export function renderDonutChart(segments, { centerLabel = "", centerSub = "" } 
     });
     path.dataset.label = seg.label;
     path.dataset.value = `${seg.value}%`;
+    path.appendChild(svgEl("title"));
+    path.querySelector("title").textContent = `${seg.label}: ${seg.value}%`;
     svg.appendChild(path);
     angle = end;
   });
@@ -122,6 +127,7 @@ export function renderStackedBar(segments, { total = 100, showLabels = true } = 
       part.textContent = `${seg.value}%`;
     }
     part.title = `${seg.label}: ${seg.value}%`;
+    part.setAttribute("aria-label", `${seg.label}: ${seg.value}%`);
     track.appendChild(part);
   }
   wrap.appendChild(track);
@@ -135,6 +141,7 @@ export function renderDivergingBars(rows) {
   for (const row of rows) {
     const item = document.createElement("div");
     item.className = "diverging-row";
+    item.setAttribute("aria-label", `${row.label}: ${row.reject}% reject-leaning, ${row.support}% support-leaning`);
 
     const label = document.createElement("div");
     label.className = "diverging-label";
@@ -146,12 +153,16 @@ export function renderDivergingBars(rows) {
     const reject = document.createElement("div");
     reject.className = "diverging-reject";
     reject.style.flex = String(row.reject);
-    reject.innerHTML = `<span>${row.reject}%</span>`;
+    const rejectLabel = document.createElement("span");
+    rejectLabel.textContent = `${row.reject}%`;
+    reject.appendChild(rejectLabel);
 
     const support = document.createElement("div");
     support.className = "diverging-support";
     support.style.flex = String(row.support);
-    support.innerHTML = `<span>${row.support}%</span>`;
+    const supportLabel = document.createElement("span");
+    supportLabel.textContent = `${row.support}%`;
+    support.appendChild(supportLabel);
 
     bar.appendChild(reject);
     bar.appendChild(support);
@@ -177,6 +188,9 @@ export function renderScatterPlot(points) {
     role: "img",
     "aria-label": "Stance map scatter plot",
   });
+  const title = svgEl("title");
+  title.textContent = "Stance map by electability and movement trust";
+  svg.appendChild(title);
 
   const defs = svgEl("defs");
   const gridPat = svgEl("pattern", { id: "grid", width: "40", height: "40", patternUnits: "userSpaceOnUse" });
@@ -294,6 +308,9 @@ export function renderTimelineChart(timeline) {
     role: "img",
     "aria-label": "Discourse intensity timeline",
   });
+  const title = svgEl("title");
+  title.textContent = "Relative discourse intensity over time";
+  svg.appendChild(title);
 
   const grad = svgEl("linearGradient", { id: "areaGrad", x1: "0", y1: "0", x2: "0", y2: "1" });
   grad.appendChild(svgEl("stop", { offset: "0%", "stop-color": "#2563eb", "stop-opacity": "0.35" }));
@@ -302,7 +319,7 @@ export function renderTimelineChart(timeline) {
   defs.appendChild(grad);
   svg.appendChild(defs);
 
-  const yTicks = [0, 25, 50, 75, 100];
+  const yTicks = [0, 25, 50, 75, 90, 100];
   for (const tick of yTicks) {
     const y = pad.t + innerH - (tick / maxY) * innerH;
     svg.appendChild(svgEl("line", {
@@ -355,13 +372,14 @@ export function renderTimelineChart(timeline) {
   const eventMonths = new Set(timeline.events.map((e) => e.month));
   timeline.categories.forEach((cat, i) => {
     const x = pad.l + (i / (timeline.categories.length - 1)) * innerW;
+    const [month, year] = cat.split(" ");
     const t = svgEl("text", {
       x,
       y: h - 12,
       "text-anchor": "middle",
       class: eventMonths.has(cat) ? "timeline-x-label timeline-x-event" : "timeline-x-label",
     });
-    t.textContent = cat.replace(" 202", "\u201920");
+    t.textContent = year ? `${month} '${year.slice(-2)}` : cat;
     svg.appendChild(t);
 
     if (eventMonths.has(cat)) {
