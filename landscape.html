@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progressive Left Landscape — Graham Platner</title>
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav>
+      <a class="brand" href="/">Platner Research</a>
+      <a href="/">Home</a>
+      <a href="/landscape" class="active">Landscape</a>
+      <a href="/analysis">Dossier</a>
+    </nav>
+  </header>
+  <main id="app"></main>
+  <script type="module">
+    import { renderLandscape } from "/js/render.js";
+    renderLandscape(document.getElementById("app"));
+  </script>
+</body>
+</html>
